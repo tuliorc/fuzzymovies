@@ -107,7 +107,7 @@ RULEBLOCK No1
 	RULE 37 : IF mediaGenero IS alta AND mediaUsuario IS baixa AND mediaFilme IS baixa AND mediaData IS alta THEN notaEstimada IS media;
 	
 
-	// media, media, baixa, alta: notaEstimada media
+	// 2 medias, 1 baixa e 1 alta: notaEstimada media
 	RULE 38 : IF mediaGenero IS media AND mediaUsuario IS media AND mediaFilme IS baixa AND mediaData IS alta THEN notaEstimada IS media;	
 	RULE 39 : IF mediaGenero IS media AND mediaUsuario IS media AND mediaFilme IS alta AND mediaData IS baixa THEN notaEstimada IS media;
 	RULE 40 : IF mediaGenero IS media AND mediaUsuario IS alta AND mediaFilme IS baixa AND mediaData IS media THEN notaEstimada IS media;
