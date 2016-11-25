@@ -2,8 +2,8 @@ FUNCTION_BLOCK estimaNotas	// Block definition (there may be more than one block
 
 // Define input variables
 VAR_INPUT
-	mediaSimilaridade : REAL; (* RANGE(1 .. 5) *)  	// a media de nota que o filme recebe de usuarios similares
-	mediaUsuario : REAL; (* RANGE(1 .. 5) *) 		// a media de nota com que o usuario avalia seus filmes
+	mediaGenero : REAL; (* RANGE(1 .. 5) *)  		// a media de nota que filmes deste gênero recebem
+	mediaUsuario : REAL; (* RANGE(1 .. 5) *) 		// a media de nota com que o usuario avalia filmes deste genêro
 	mediaFilme: REAL; (* RANGE(1 .. 5) *)			// a media de nota que o filme recebe no geral
 	mediaData : REAL; (* RANGE(1 .. 5) *) 			// a media de nota que o filme recebeu na data em questão
 END_VAR
@@ -13,8 +13,8 @@ VAR_OUTPUT
 	notaEstimada : REAL; (* RANGE(1 .. 5) *) 
 END_VAR
 
-// Fuzzify input variable 'mediaSimilaridade': { 'baixa', 'media', 'alta' }
-FUZZIFY mediaSimilaridade
+// Fuzzify input variable 'mediaGenero': { 'baixa', 'media', 'alta' }
+FUZZIFY mediaGenero
 	TERM baixa := gauss 1 0.5; //equivalente ao LR
 	TERM media := gauss 3 0.5; //equivalente ao MR
 	TERM alta := gauss 5 0.5;  //equivalente ao HR
@@ -47,7 +47,7 @@ DEFUZZIFY notaEstimada
 	TERM media := gauss 3 0.5; //equivalente ao MR
 	TERM alta := gauss 5 0.5;  //equivalente ao HR
 	METHOD : COG;		// Usa o metodo de defuzzificacao 'Centro da Area'
-	DEFAULT := 3;		// A nota padrao vale 3 (caso nenhuma regra ative o defuzzificador)
+	DEFAULT := 0;		// A nota padrao vale 0 (caso nenhuma regra ative o defuzzificador)
 END_DEFUZZIFY
 
 RULEBLOCK No1
@@ -55,9 +55,116 @@ RULEBLOCK No1
 	ACT : MIN;	// Use 'min' activation method
 	ACCU : MAX;	// Use 'max' accumulation method
 
-	RULE 1 : IF mediaSimilaridade IS baixa AND mediaUsuario IS baixa AND mediaFilme IS baixa AND mediaData IS baixa THEN notaEstimada IS baixa;
-	RULE 2 : IF mediaSimilaridade IS media AND mediaUsuario IS media AND mediaFilme IS media AND mediaData IS media THEN notaEstimada IS media;
-	RULE 3 : IF mediaSimilaridade IS alta AND mediaUsuario IS alta AND mediaFilme IS alta AND mediaData IS alta THEN notaEstimada IS alta;
+	// São 81 regras
+
+	// 4 notas baixas: notaEstimada baixa
+	RULE 1 : IF mediaGenero IS baixa AND mediaUsuario IS baixa AND mediaFilme IS baixa AND mediaData IS baixa THEN notaEstimada IS baixa;
+
+	// 3 notas baixas: notaEstimada baixa
+	RULE 2 : IF mediaGenero IS baixa AND mediaUsuario IS baixa AND mediaFilme IS baixa AND mediaData IS media THEN notaEstimada IS baixa;
+	RULE 3 : IF mediaGenero IS baixa AND mediaUsuario IS baixa AND mediaFilme IS baixa AND mediaData IS alta THEN notaEstimada IS baixa;
+	RULE 4 : IF mediaGenero IS baixa AND mediaUsuario IS baixa AND mediaFilme IS media AND mediaData IS baixa THEN notaEstimada IS baixa;
+	RULE 5 : IF mediaGenero IS baixa AND mediaUsuario IS baixa AND mediaFilme IS alta AND mediaData IS baixa THEN notaEstimada IS baixa;
+	RULE 6 : IF mediaGenero IS baixa AND mediaUsuario IS media AND mediaFilme IS baixa AND mediaData IS baixa THEN notaEstimada IS baixa;
+	RULE 7 : IF mediaGenero IS baixa AND mediaUsuario IS alta AND mediaFilme IS baixa AND mediaData IS baixa THEN notaEstimada IS baixa;
+	RULE 8 : IF mediaGenero IS media AND mediaUsuario IS baixa AND mediaFilme IS baixa AND mediaData IS baixa THEN notaEstimada IS baixa;
+	RULE 9 : IF mediaGenero IS alta AND mediaUsuario IS baixa AND mediaFilme IS baixa AND mediaData IS baixa THEN notaEstimada IS baixa;
+
+	// 2 baixas e 2 médias: notaEstimada baixa
+	RULE 10 : IF mediaGenero IS baixa AND mediaUsuario IS baixa AND mediaFilme IS media AND mediaData IS media THEN notaEstimada IS baixa;
+	RULE 11 : IF mediaGenero IS baixa AND mediaUsuario IS media AND mediaFilme IS baixa AND mediaData IS media THEN notaEstimada IS baixa;
+	RULE 12 : IF mediaGenero IS baixa AND mediaUsuario IS media AND mediaFilme IS media AND mediaData IS baixa THEN notaEstimada IS baixa;
+	RULE 13 : IF mediaGenero IS media AND mediaUsuario IS media AND mediaFilme IS baixa AND mediaData IS baixa THEN notaEstimada IS baixa;
+	RULE 14 : IF mediaGenero IS media AND mediaUsuario IS baixa AND mediaFilme IS media AND mediaData IS baixa THEN notaEstimada IS baixa;
+	RULE 15 : IF mediaGenero IS media AND mediaUsuario IS baixa AND mediaFilme IS baixa AND mediaData IS media THEN notaEstimada IS baixa;
+
+	// 2 baixas, 1 média e 1 alta: notaEstimada media
+	RULE 16 : IF mediaGenero IS baixa AND mediaUsuario IS baixa AND mediaFilme IS media AND mediaData IS alta THEN notaEstimada IS media;
+	RULE 17 : IF mediaGenero IS baixa AND mediaUsuario IS baixa AND mediaFilme IS alta AND mediaData IS media THEN notaEstimada IS media;
+	RULE 18 : IF mediaGenero IS baixa AND mediaUsuario IS media AND mediaFilme IS baixa AND mediaData IS alta THEN notaEstimada IS media;
+	RULE 19 : IF mediaGenero IS baixa AND mediaUsuario IS alta AND mediaFilme IS baixa AND mediaData IS media THEN notaEstimada IS media;
+	RULE 20 : IF mediaGenero IS baixa AND mediaUsuario IS media AND mediaFilme IS alta AND mediaData IS baixa THEN notaEstimada IS media;
+	RULE 21 : IF mediaGenero IS baixa AND mediaUsuario IS alta AND mediaFilme IS media AND mediaData IS baixa THEN notaEstimada IS media;
+	RULE 22 : IF mediaGenero IS media AND mediaUsuario IS baixa AND mediaFilme IS baixa AND mediaData IS alta THEN notaEstimada IS media;
+	RULE 23 : IF mediaGenero IS media AND mediaUsuario IS alta AND mediaFilme IS baixa AND mediaData IS baixa THEN notaEstimada IS media;
+	RULE 24 : IF mediaGenero IS media AND mediaUsuario IS baixa AND mediaFilme IS alta AND mediaData IS baixa THEN notaEstimada IS media;
+	RULE 25 : IF mediaGenero IS alta AND mediaUsuario IS media AND mediaFilme IS baixa AND mediaData IS baixa THEN notaEstimada IS media;
+	RULE 26 : IF mediaGenero IS alta AND mediaUsuario IS baixa AND mediaFilme IS media AND mediaData IS baixa THEN notaEstimada IS media;
+	RULE 27 : IF mediaGenero IS alta AND mediaUsuario IS baixa AND mediaFilme IS baixa AND mediaData IS media THEN notaEstimada IS media;	
+	
+	// 3 medias e 1 baixa: notaEstimada media
+	RULE 28 : IF mediaGenero IS media AND mediaUsuario IS media AND mediaFilme IS media AND mediaData IS baixa THEN notaEstimada IS media;
+	RULE 29 : IF mediaGenero IS media AND mediaUsuario IS media AND mediaFilme IS baixa AND mediaData IS media THEN notaEstimada IS media;
+	RULE 30 : IF mediaGenero IS media AND mediaUsuario IS baixa AND mediaFilme IS media AND mediaData IS media THEN notaEstimada IS media;
+	RULE 31 : IF mediaGenero IS baixa AND mediaUsuario IS media AND mediaFilme IS media AND mediaData IS media THEN notaEstimada IS media;
+
+	// 2 baixas e 2 medias: notaEstimada media
+	RULE 32 : IF mediaGenero IS baixa AND mediaUsuario IS baixa AND mediaFilme IS alta AND mediaData IS alta THEN notaEstimada IS media;
+	RULE 33 : IF mediaGenero IS baixa AND mediaUsuario IS alta AND mediaFilme IS baixa AND mediaData IS alta THEN notaEstimada IS media;
+	RULE 34 : IF mediaGenero IS baixa AND mediaUsuario IS alta AND mediaFilme IS alta AND mediaData IS baixa THEN notaEstimada IS media;
+	RULE 35 : IF mediaGenero IS alta AND mediaUsuario IS alta AND mediaFilme IS baixa AND mediaData IS baixa THEN notaEstimada IS media;
+	RULE 36 : IF mediaGenero IS alta AND mediaUsuario IS baixa AND mediaFilme IS alta AND mediaData IS baixa THEN notaEstimada IS media;
+	RULE 37 : IF mediaGenero IS alta AND mediaUsuario IS baixa AND mediaFilme IS baixa AND mediaData IS alta THEN notaEstimada IS media;
+	
+
+	// media, media, baixa, alta: notaEstimada media
+	RULE 38 : IF mediaGenero IS media AND mediaUsuario IS media AND mediaFilme IS baixa AND mediaData IS alta THEN notaEstimada IS media;	
+	RULE 39 : IF mediaGenero IS media AND mediaUsuario IS media AND mediaFilme IS alta AND mediaData IS baixa THEN notaEstimada IS media;
+	RULE 40 : IF mediaGenero IS media AND mediaUsuario IS alta AND mediaFilme IS baixa AND mediaData IS media THEN notaEstimada IS media;
+	RULE 41 : IF mediaGenero IS media AND mediaUsuario IS alta AND mediaFilme IS media AND mediaData IS baixa THEN notaEstimada IS media;
+	RULE 42 : IF mediaGenero IS media AND mediaUsuario IS baixa AND mediaFilme IS alta AND mediaData IS media THEN notaEstimada IS media;
+	RULE 43 : IF mediaGenero IS media AND mediaUsuario IS baixa AND mediaFilme IS media AND mediaData IS alta THEN notaEstimada IS media;
+	RULE 44 : IF mediaGenero IS alta AND mediaUsuario IS baixa AND mediaFilme IS media AND mediaData IS media THEN notaEstimada IS media;
+	RULE 45 : IF mediaGenero IS alta AND mediaUsuario IS media AND mediaFilme IS media AND mediaData IS baixa THEN notaEstimada IS media;
+	RULE 46 : IF mediaGenero IS baixa AND mediaUsuario IS alta AND mediaFilme IS media AND mediaData IS media THEN notaEstimada IS media;
+	RULE 47 : IF mediaGenero IS baixa AND mediaUsuario IS media AND mediaFilme IS alta AND mediaData IS media THEN notaEstimada IS media;
+	RULE 48 : IF mediaGenero IS baixa AND mediaUsuario IS media AND mediaFilme IS media AND mediaData IS alta THEN notaEstimada IS media;	
+	RULE 49 : IF mediaGenero IS alta AND mediaUsuario IS media AND mediaFilme IS baixa AND mediaData IS media THEN notaEstimada IS media;	
+
+	// 4 medias: notaEstimada media  
+	RULE 50 : IF mediaGenero IS media AND mediaUsuario IS media AND mediaFilme IS media AND mediaData IS media THEN notaEstimada IS media;
+	
+	// 2 altas, 1 baixa e 1 media: notaEstimada media
+	RULE 51 : IF mediaGenero IS alta AND mediaUsuario IS alta AND mediaFilme IS baixa AND mediaData IS media THEN notaEstimada IS media;
+	RULE 52 : IF mediaGenero IS alta AND mediaUsuario IS alta AND mediaFilme IS media AND mediaData IS baixa THEN notaEstimada IS media;
+	RULE 53 : IF mediaGenero IS alta AND mediaUsuario IS baixa AND mediaFilme IS media AND mediaData IS alta THEN notaEstimada IS media;
+	RULE 54 : IF mediaGenero IS alta AND mediaUsuario IS baixa AND mediaFilme IS alta AND mediaData IS media THEN notaEstimada IS media;
+	RULE 55 : IF mediaGenero IS alta AND mediaUsuario IS media AND mediaFilme IS baixa AND mediaData IS alta THEN notaEstimada IS media;
+	RULE 56 : IF mediaGenero IS alta AND mediaUsuario IS media AND mediaFilme IS alta AND mediaData IS baixa THEN notaEstimada IS media;
+	RULE 57 : IF mediaGenero IS baixa AND mediaUsuario IS media AND mediaFilme IS alta AND mediaData IS alta THEN notaEstimada IS media;
+	RULE 58 : IF mediaGenero IS baixa AND mediaUsuario IS alta AND mediaFilme IS media AND mediaData IS alta THEN notaEstimada IS media;
+	RULE 59 : IF mediaGenero IS baixa AND mediaUsuario IS alta AND mediaFilme IS alta AND mediaData IS media THEN notaEstimada IS media;
+	RULE 60 : IF mediaGenero IS media AND mediaUsuario IS baixa AND mediaFilme IS alta AND mediaData IS alta THEN notaEstimada IS media	
+	RULE 61 : IF mediaGenero IS media AND mediaUsuario IS alta AND mediaFilme IS baixa AND mediaData IS alta THEN notaEstimada IS media;
+	RULE 62 : IF mediaGenero IS media AND mediaUsuario IS alta AND mediaFilme IS alta AND mediaData IS baixa THEN notaEstimada IS media;
+	
+	// 3 medias e 1 alta: notaEstimada media
+	RULE 63 : IF mediaGenero IS media AND mediaUsuario IS media AND mediaFilme IS media AND mediaData IS alta THEN notaEstimada IS media;
+	RULE 64 : IF mediaGenero IS media AND mediaUsuario IS media AND mediaFilme IS alta AND mediaData IS media THEN notaEstimada IS media;
+	RULE 65 : IF mediaGenero IS media AND mediaUsuario IS alta AND mediaFilme IS media AND mediaData IS media THEN notaEstimada IS media;
+	RULE 66 : IF mediaGenero IS alta AND mediaUsuario IS media AND mediaFilme IS media AND mediaData IS media THEN notaEstimada IS media;
+
+	// 2 medias e 1 alta: notaEstimada alta	
+	RULE 67 : IF mediaGenero IS media AND mediaUsuario IS media AND mediaFilme IS alta AND mediaData IS alta THEN notaEstimada IS alta;
+	RULE 68 : IF mediaGenero IS media AND mediaUsuario IS alta AND mediaFilme IS mama AND mediaData IS alta THEN notaEstimada IS alta;
+	RULE 69 : IF mediaGenero IS media AND mediaUsuario IS alta AND mediaFilme IS alta AND mediaData IS media THEN notaEstimada IS alta;
+	RULE 70 : IF mediaGenero IS alta AND mediaUsuario IS media AND mediaFilme IS alta AND mediaData IS media THEN notaEstimada IS alta;
+	RULE 71 : IF mediaGenero IS alta AND mediaUsuario IS media AND mediaFilme IS media AND mediaData IS alta THEN notaEstimada IS alta;
+	RULE 72 : IF mediaGenero IS alta AND mediaUsuario IS alta AND mediaFilme IS media AND mediaData IS media THEN notaEstimada IS alta;
+
+	// 3 altas: notaEstimada alta
+	RULE 73 : IF mediaGenero IS alta AND mediaUsuario IS alta AND mediaFilme IS alta AND mediaData IS baixa THEN notaEstimada IS alta;
+	RULE 74 : IF mediaGenero IS alta AND mediaUsuario IS alta AND mediaFilme IS baixa AND mediaData IS alta THEN notaEstimada IS alta;
+	RULE 75 : IF mediaGenero IS alta AND mediaUsuario IS baixa AND mediaFilme IS alta AND mediaData IS alta THEN notaEstimada IS alta;
+	RULE 76 : IF mediaGenero IS baixa AND mediaUsuario IS alta AND mediaFilme IS alta AND mediaData IS alta THEN notaEstimada IS alta;
+	RULE 77 : IF mediaGenero IS alta AND mediaUsuario IS alta AND mediaFilme IS alta AND mediaData IS media THEN notaEstimada IS alta;
+	RULE 78 : IF mediaGenero IS alta AND mediaUsuario IS alta AND mediaFilme IS media AND mediaData IS alta THEN notaEstimada IS alta;
+	RULE 79 : IF mediaGenero IS alta AND mediaUsuario IS media AND mediaFilme IS alta AND mediaData IS alta THEN notaEstimada IS alta;
+	RULE 80 : IF mediaGenero IS media AND mediaUsuario IS alta AND mediaFilme IS alta AND mediaData IS alta THEN notaEstimada IS alta;
+
+	// 4 altas: notaEstimada alta
+	RULE 81 : IF mediaGenero IS alta AND mediaUsuario IS alta AND mediaFilme IS alta AND mediaData IS alta THEN notaEstimada IS alta;
+
 END_RULEBLOCK
 
 END_FUNCTION_BLOCK
