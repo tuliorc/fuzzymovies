@@ -34,10 +34,10 @@ public class FuzzyMoviesComFCL_Passos
       JFuzzyChart.get().chart(functionBlock);
  
       // Set inputs
-      functionBlock.setVariable("mediaGenero", 4);
-      functionBlock.setVariable("mediaUsuario", 3);
-      functionBlock.setVariable("mediaFilme", 4);
-      functionBlock.setVariable("mediaData", 5);
+      functionBlock.setVariable("mediaGenero", 2);
+      functionBlock.setVariable("mediaUsuario", 1);
+      functionBlock.setVariable("mediaFilme", 1);
+      functionBlock.setVariable("mediaData", 1);
       
       // Evaluate 
       fis.evaluate();
