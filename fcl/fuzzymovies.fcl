@@ -144,9 +144,9 @@ RULEBLOCK No1
 	RULE 65 : IF mediaGenero IS media AND mediaUsuario IS alta AND mediaFilme IS media AND mediaData IS media THEN notaEstimada IS media;
 	RULE 66 : IF mediaGenero IS alta AND mediaUsuario IS media AND mediaFilme IS media AND mediaData IS media THEN notaEstimada IS media;
 
-	// 2 medias e 1 alta: notaEstimada alta	
+	// 2 medias e 2 alta: notaEstimada alta	
 	RULE 67 : IF mediaGenero IS media AND mediaUsuario IS media AND mediaFilme IS alta AND mediaData IS alta THEN notaEstimada IS alta;
-	RULE 68 : IF mediaGenero IS media AND mediaUsuario IS alta AND mediaFilme IS mama AND mediaData IS alta THEN notaEstimada IS alta;
+	RULE 68 : IF mediaGenero IS media AND mediaUsuario IS alta AND mediaFilme IS media AND mediaData IS alta THEN notaEstimada IS alta;
 	RULE 69 : IF mediaGenero IS media AND mediaUsuario IS alta AND mediaFilme IS alta AND mediaData IS media THEN notaEstimada IS alta;
 	RULE 70 : IF mediaGenero IS alta AND mediaUsuario IS media AND mediaFilme IS alta AND mediaData IS media THEN notaEstimada IS alta;
 	RULE 71 : IF mediaGenero IS alta AND mediaUsuario IS media AND mediaFilme IS media AND mediaData IS alta THEN notaEstimada IS alta;
